@@ -22,7 +22,7 @@ uint64_t count_width(FILE* file) {
 	return count;
 }
 
-//подсчёт высоты таблицы, количества вершин 
+//под счёт высоты таблицы, количества вершин 
 uint64_t count_height(FILE* file) {
 	rewind(file);
 	uint64_t count = 0;
@@ -33,7 +33,7 @@ uint64_t count_height(FILE* file) {
 }
 
 //считывает матрицу инцидетности из файла
-void fread_inc_matrix(bool** inc_matrix, FILE* file, uint64_t count_edges, uint64_t count_vertices){
+void fread_inc_matrix(bool** inc_matrix, FILE* file, uint64_t count_edges, uint64_t count_vertices) {
 	rewind(file);
 	uint8_t buffer;
 	for (uint64_t i = 0; i < count_vertices; i++) {
@@ -45,11 +45,11 @@ void fread_inc_matrix(bool** inc_matrix, FILE* file, uint64_t count_edges, uint6
 }
 
 //переводит матрицу инцидетности в матрциу смежности и записывает в граф
-void convert_inc_matrix_and_write_adj_graph(graph* cur_graph, bool** inc_matrix){
+void convert_inc_matrix_and_write_adj_graph(graph* cur_graph, bool** inc_matrix) {
 	int i1, i2;
 	for (uint64_t i = 0; i < cur_graph->count_edges; i++) {
 		i1 = i2 = -1;
-		for (uint64_t j = 0; j < cur_graph->count_vertices; j++){
+		for (uint64_t j = 0; j < cur_graph->count_vertices; j++) {
 			if (inc_matrix[j][i]) {
 				if (i1 == -1) i1 = i2 = j;
 				else i2 = j;
@@ -67,7 +67,7 @@ void convert_inc_matrix_and_write_adj_graph(graph* cur_graph, bool** inc_matrix)
 void fread_graph (graph* cur_graph, FILE* file) {
 	//инициализируем двойной массив матрицы инцидетности
 	bool** inc_matrix = (bool**) malloc(cur_graph->count_vertices * sizeof(bool*));
-	for (uint64_t i = 0; i < cur_graph->count_vertices; i++){
+	for (uint64_t i = 0; i < cur_graph->count_vertices; i++) {
 		inc_matrix[i] = (bool*) calloc(cur_graph->count_edges, sizeof(bool));
 	}
 	
@@ -137,30 +137,19 @@ int main(int argc, char *argv[]) {
 	FILE* fread = fopen(argv[1], "r");
 	graph* cur_graph = init_graph(fread); 
 	fclose(fread);
-	del_graph(cur_graph);
 	
 	switch (check_connected_graph(cur_graph)) {
 		case 1:
 			puts("Graph is connected");
+			del_graph(cur_graph);
 			return 1;
 		case 0:
 			puts("The theorem fails");
+			del_graph(cur_graph);
 			return 0;
 		case -1:
 			puts("Graph is not simple, the theorem fails");
+			del_graph(cur_graph);
 			return -1;
 	}
 }
-
-
-
-/* для вывода матрицы смежности
-	printf("vert -> %I64i\n edge -> %I64i\n", cur_graph->count_vertices, cur_graph->count_edges);
-	for (uint64_t i = 0; i < cur_graph->count_vertices; i++) {
-		for (uint64_t j = 0; j < cur_graph->count_vertices; j++){
-			printf ("%I64i ", cur_graph->adj_matrix[i][j]);
-		}
-		putchar('\n');
-	}
-*/
-	
